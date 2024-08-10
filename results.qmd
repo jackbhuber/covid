@@ -1,0 +1,46 @@
+# Results {.unnumbered}
+
+```{r}
+#| label: data_prep
+#| message: false
+#| include: false
+#| echo: false
+#| warning: false
+#| verbose: false
+#| output: false
+
+source('code/data_prep.R')
+
+```
+
+## Bivariate correlations
+
+```{r}
+#| label: correlation_matrix
+#| message: false
+#| include: false
+#| echo: false
+#| warning: false
+#| verbose: false
+#| output: false
+
+source('code/correlation_matrix.R')
+
+```
+
+## Table 1
+
+```{r}
+
+library(gtsummary)
+
+# Table 1
+table1 <- 
+  df3 %>%
+  tbl_summary(include = c(health, happy, d_physical))
+
+table1
+
+```
+
+

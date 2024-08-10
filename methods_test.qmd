@@ -1,0 +1,150 @@
+# Methods {.unnumbered}
+
+## Data source
+
+The source of data for this project is Wave VI of the Baylor Religion Survey. The survey was conducted via mail and web from January 27 – March 21, 2021, with a random sample of 1,248 adults ages 18 and older, living in all 50 states and the District of Columbia. Gallup randomly selected individuals to participate using an address-based sample (ABS) frame. Respondents had the opportunity to respond to the survey via web or paper. Surveys were conducted in English and Spanish. The final response rate to this survey was 11.3% (AAPOR1). Samples were weighted to correct for unequal selection probability and nonresponse. Demographic weighting targets are based on the 2020 American Community Survey figures for the 18 and older population. The data were weighted to match national demographics of age, education, gender, race, ethnicity, and Census region.
+
+## Participants
+
+The source of data for this project is Wave VI of the Baylor Religion Survey. The survey was conducted via mail and web from January 27 – March 21, 2021, with a random sample of 1,248 adults ages 18 and older, living in all 50 states and the District of Columbia. Gallup randomly selected individuals to participate using an address-based sample (ABS) frame. Respondents had the opportunity to respond to the survey via web or paper. Surveys were conducted in English and Spanish. The final response rate to this survey was 11.3% (AAPOR1). Samples were weighted to correct for unequal selection probability and nonresponse. Demographic weighting targets are based on the 2020 American Community Survey figures for the 18 and older population. The data were weighted to match national demographics of age, education, gender, race, ethnicity, and Census region.
+
+```{r}
+#| label: load_packages
+#| message: false
+#| warning: false
+
+# LOAD PACKAGES
+library(conflicted)
+library(labelled)
+library(tidyverse)
+library(tibble)
+library(dplyr)
+library(TAM)
+library(WrightMap)
+library(psych)
+library(ltm)
+```
+
+```{r}
+#| label: read_data
+#| message: false
+#| warning: false
+
+df <- read.csv("https://raw.githubusercontent.com/jackbhuber/datasets/main/Baylor_Religion_Survey_Wave_VI_2021.csv", header = TRUE)
+```
+
+## Outcome measures
+
+### General happiness
+
+One item asked respondents to rate how happy they were in general according to a three-point scale: 1 = Not too happy, 2 = Pretty happy, 3 = Very happy.
+
+```{r}
+#| label: happy_item
+#| message: false
+#| warning: false
+
+# impute column mean to missing values
+df$Q1[is.na(df$Q1)] <- mean(df$Q1, na.rm=TRUE) 
+df$Happy <- df$Q1
+var_label(df$Happy) <- "Happy"
+df$Q1 <- NULL
+```
+
+### Health items
+
+One item asked respondents to rate their health in general on a 5-point scale: 1= Poor, 2 = Fair, 3 = Good, 4 = Very good, 5 = Excellent. A related item asked respondents if they had a physical health problem that limits the kind or amount of activity they could do.
+
+```{r}
+#| label: health_item
+#| message: false
+#| warning: false
+
+# Health item
+df$Q2[is.na(df$Q2)] <- mean(df$Q2, na.rm=TRUE)
+df$Health <- df$Q2
+var_label(df$Health) <- "Health"
+df$Q2 <- NULL
+
+```
+
+```{r}
+#| label: d_physical
+#| message: false
+#| warning: false
+
+# Physical problem dummy
+df$Q3[is.na(df$Q3)] <- mean(df$Q3, na.rm=TRUE)
+df$d_physical <- ifelse(df$Q3 == 1, 1, 0)
+var_label(df$d_physical) <- "Physical impairment"
+df$Q3 <- NULL
+
+```
+
+### Emotional contentment
+
+Seven items asked respondents how often in the past week they felt depressed, sad, worried, tense, anxious, restless, bored, angry. Each item asked the respondent to rate their response on the following 4-point scale of frequency: 1 = Never, 2 = Hardly ever, 3 = Some of the time, 4 = Most or all of the time. 
+
+```{r}
+#| label: contentment
+#| message: false
+#| warning: false
+
+df$Q4A[is.na(df$Q4A)] <- mean(df$Q4A, na.rm=TRUE) # sad
+df$Q4B[is.na(df$Q4B)] <- mean(df$Q4B, na.rm=TRUE) # worried
+df$Q4C[is.na(df$Q4C)] <- mean(df$Q4C, na.rm=TRUE) # tense
+df$Q4D[is.na(df$Q4D)] <- mean(df$Q4D, na.rm=TRUE) # anxious
+df$Q4E[is.na(df$Q4E)] <- mean(df$Q4E, na.rm=TRUE) # restless
+df$Q4F[is.na(df$Q4F)] <- mean(df$Q4F, na.rm=TRUE) # bored
+df$Q4G[is.na(df$Q4G)] <- mean(df$Q4G, na.rm=TRUE) # angry
+
+content = c('Q4A', 'Q4B', 'Q4C', 'Q4D', 'Q4E', 'Q4F', 'Q4G')
+df[ , content] = 5 - df[ , content]
+df_contentment <- df[ , content]
+
+```
+
+```{r}
+#| label: alpha_contentment # Cronbach's alpha
+#| message: false
+#| warning: false
+
+a <- cronbach.alpha(df_contentment)
+b <- a$alpha
+```
+
+I reverse coded these items and fit them to a Rasch model. Together formed a reliable scale of emotional contentment in which a higher value indicates more emotional contentment.
+
+```{r}
+#| label: rasch_contentment
+#| message: false
+#| include: false
+#| echo: false
+#| warning: false
+#| verbose: false
+#| output: false
+
+mod1 <- tam(df_contentment)
+# summary(mod1) # model summary
+# plot(mod1) # plots of item curves
+# hist(diffic$xsi, breaks=10) # histogram of item difficulties
+abil <- tam.wle(mod1) # abilities
+PersonAbil  <- abil$theta
+# hist(PersonAbil)
+df$Contentment <- abil$theta
+var_label(df$Contentment) <- "Contentment"
+
+```
+
+```{r}
+#| label: contentment_cleanup
+#| message: false
+#| warning: false
+
+
+df[ , content] <- NULL
+rm(content, a, abil, df_contentment, mod1)
+
+```
+
+

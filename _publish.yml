@@ -1,0 +1,4 @@
+- source: project
+  netlify:
+    - id: d482339a-7768-41b4-bd6a-282dd8662734
+      url: 'https://covid.jackhuber.org'

@@ -1,0 +1,33 @@
+project:
+  type: book
+
+book:
+  title: "Prayer as Spiritual Coping"
+  author: "Jack Huber, Ph.D."
+  date: last-modified
+  date-format: long
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - methods.qmd
+    - results.qmd
+    - discussion.qmd
+    - references.qmd
+  downloads: [pdf]
+  page-navigation: true
+  navbar: 
+    background: navy
+    foreground: white
+
+bibliography: references.bib
+csl: apa.csl
+
+format:
+  html:
+    theme: cosmo
+    code-fold: true
+  pdf:
+    documentclass: scrreprt
+
+editor: visual
+
