@@ -83,7 +83,7 @@ df$Q3 <- NULL
 
 ### Emotional contentment
 
-Seven items asked respondents how often in the past week they felt depressed, sad, worried, tense, anxious, restless, bored, angry. Each item asked the respondent to rate their response on the following 4-point scale of frequency: 1 = Never, 2 = Hardly ever, 3 = Some of the time, 4 = Most or all of the time. 
+Seven items asked respondents how often in the past week they felt depressed, sad, worried, tense, anxious, restless, bored, angry. Each item asked the respondent to rate their response on the following 4-point scale of frequency: 1 = Never, 2 = Hardly ever, 3 = Some of the time, 4 = Most or all of the time.
 
 ```{r}
 #| label: contentment
@@ -146,5 +146,3 @@ df[ , content] <- NULL
 rm(content, a, abil, df_contentment, mod1)
 
 ```
-
-
